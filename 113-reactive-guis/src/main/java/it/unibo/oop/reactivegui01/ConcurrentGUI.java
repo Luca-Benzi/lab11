@@ -37,16 +37,8 @@ public final class ConcurrentGUI extends JFrame {
         panel.add(stop);
         this.getContentPane().add(panel);
         this.setVisible(true);
-        /*
-         * Create the counter agent and start it. This is actually not so good:
-         * thread management should be left to
-         * java.util.concurrent.ExecutorService
-         */
         final Agent agent = new Agent();
         new Thread(agent).start();
-        /*
-         * Register a listener that stops it
-         */
         stop.addActionListener((e) -> agent.stopCounting());
     }
 
@@ -54,17 +46,7 @@ public final class ConcurrentGUI extends JFrame {
      * The counter agent is implemented as a nested class. This makes it
      * invisible outside and encapsulated.
      */
-    private class Agent implements Runnable {
-        /*
-         * Stop is volatile to ensure visibility. Look at:
-         * 
-         * http://archive.is/9PU5N - Sections 17.3 and 17.4
-         * 
-         * For more details on how to use volatile:
-         * 
-         * http://archive.is/4lsKW
-         * 
-         */
+    private final class Agent implements Runnable {
         private volatile boolean stop;
         private int counter;
 
@@ -78,10 +60,6 @@ public final class ConcurrentGUI extends JFrame {
                     this.counter++;
                     Thread.sleep(100);
                 } catch (InvocationTargetException | InterruptedException ex) {
-                    /*
-                     * This is just a stack trace print, in a real program there
-                     * should be some logging and decent error reporting
-                     */
                     ex.printStackTrace();
                 }
             }
